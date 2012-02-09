@@ -1,9 +1,9 @@
 #bump
 - - - - - - - -
 
-bump replaces text tags in a file with a variety of information.  It is
-typically used to augment a source file with information about a build at
-compile time.  See 'Example' section below.
+bump replaces text tags in a file with information, such as environment
+variables, program output and time.  It's typical use is to add timestamp and
+version information to a C header file before each build.  See 'Example' below.
 
 
 ## Usage
@@ -29,48 +29,32 @@ compile time.  See 'Example' section below.
 
 ## Example
 
-if 'version' file is
+If 'version' file is this, running './bump -o foo.h' produces foo.h.
+                      |                                        |
+                      v                                        v
+	// - Created with <appname> <bumpver>           // - Created with bump 0.9
 
-	// - Created with <appname> <bumpver>
+	#ifndef  <^^outfilebase>_INCLUDED               #ifndef  FOO_H_INCLUDED
+	#define  <^^outfilebase>_INCLUDED               #define  FOO_H_INCLUDED
 
-	#ifndef  <^^outfilebase>_INCLUDED
-	#define  <^^outfilebase>_INCLUDED
+	#define  BUILD_CFG  "<buildcfg?=debug>"         #define  BUILD_CFG  "debug"
+	#define  <^buildcfg>_BUILD                      #define  DEBUG_BUILD
 
-	#define  BUILD_CFG  "<buildcfg?=debug>"
-	#define  <^buildcfg>_BUILD
+	#define  DATE     "<%Y-%m-%d>"                  #define  DATE     "2012-02-08"
+	#define  TIME     "<%I:%M %p>"                  #define  TIME     "04:53 PM"
+	#define  TIME_T   <%s>                          #define  TIME_T   1328741616
 
-	#define  DATE     "<%Y-%m-%d>"
-	#define  TIME     "<%I:%M %p>"
-	#define  TIME_T   <%s>
-
-	#define  UUID     "<`uuidgen`>"
-	#define  DIR      "<env[PWD]>"
-	#endif
-
-running './bump -o foo.h' produces foo.h with
-
-	// - Created with bump 0.9
-
-	#ifndef  FOO_H_INCLUDED
-	#define  FOO_H_INCLUDED
-
-	#define  BUILD_CFG  "debug"
-	#define  DEBUG_BUILD
-
-	#define  DATE     "2012-02-08"
-	#define  TIME     "04:53 PM"
-	#define  TIME_T   1328741616
-
-	#define  UUID     "C4D0B17E-C837-4954-AB5A-A340694DBFF5"
-	#define  DIR      "/Users/elvis/bump"
-	#endif
+	#define  USER     "<`whoami`>"                  #define  USER     "john"
+	#define  DIR      "<env[PWD]>"                  #define  DIR      "/Users/elvis/bump"
+	#endif                                          #endif
 
 
 ## Syntax
 
-Replacement tags are surrounded by '<\>' (greater-than and less-than)
-characters, i.e. '<foo>'.  The language of the input file is opaque to bump.
-Tags at any location will get replaced.  To place a literal '<' or '>' in a
+Replacement tags are surrounded by '<\>' characters, i.e. '<foo>'.  All tags
+get replaced, regardless of location in the input file.   Tags at any location will get replaced.
+	The
+language of the input file is opaque to bump.  Tags at any location will get replaced.  To place a literal '<' or '>' in a
 file, place a backslash before the character ('\<' or '\\>').
 
 There are four types of replacements -

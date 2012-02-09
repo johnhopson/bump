@@ -17,18 +17,18 @@ class App
   BUMPVER = '0.9'
 
   def  initialize
-    @appname = File.basename($0)
+    @appname = File.basename $0
     @time    = Time.now
     @verbose = false
     @help    = false
     @version = false
     @infile  = "version"
     @outfile = "stdout"
-    @defines = {'appname'  => @appname,                         #  bump
-                'bumpver'  => BUMPVER,                          #  0.9
-                'os'       => RUBY_PLATFORM,                    #  linux
-                'msbuild'  => days_since_msepoch.to_s,          #  32378
-                'msrev'    => (seconds_since_midnight/2).to_s } #  21432
+    @defines = {'appname' => @appname,                         #  bump
+                'bumpver' => BUMPVER,                          #  0.9
+                'os'      => RUBY_PLATFORM,                    #  linux
+                'msbuild' => days_since_msepoch.to_s,          #  32378
+                'msrev'   => (seconds_since_midnight/2).to_s } #  21432
   end
 
 
@@ -42,33 +42,32 @@ class App
       next if line =~ /^##/
 
       #  Remove ## comments
-      line.sub!( /##.*$/, "" )
+      line.sub! /##.*$/, ""
 
       #  Replace escaped < > with
       #  otherwise invalid value
-      line.sub!( /\\</, 3.chr )
-      line.sub!( /\\>/, 2.chr )
+      line.sub! /\\</, 3.chr
+      line.sub! /\\>/, 2.chr
 
       #  Find all '<>' tags
       tags=[]
-      line.scan( /<(.+?)>/ ) { |tag| tags << tag.to_s }
+      line.scan( /<(.+?)>/ ){ |tag| tags << tag.to_s }
 
       #  substitute tags with values.
       tags.each do |tag|
 
         #  Find and remove ^
         #  and ^^ prefixes
-        c_ident = upcase = false
-        case tag
-        when /^\^\^(.+)/ then  tag=$1; c_ident=true
-        when /^\^(.+)/   then  tag=$1; upcase=true
-        end
+        value=tag
+        c_ident=upcase=false
+        if tag=~/^\^(.+)/   then  value=$1; upcase=true  end
+        if tag=~/^\^\^(.+)/ then  value=$1; c_ident=true end
 
-        case tag
+        case value
         #  Value is environment var
         when /^env\[(\w+)\]/ then  value=ENV[$1]
-        #  Value is time format
-        when /^(%.+)/        then  value=@time.strftime($1)
+        #  Value is a time format
+        when /^(%.+)/        then  value=@time.strftime $1
         #  Value is exe output
         when /^`(\w+)`/      then  value=`#{$1}`.chomp
         #  Has default value
@@ -80,24 +79,19 @@ class App
         raise "No value for tag \"<#{tag}>\" "+
               "on line \"#{line}\""   if value == nil
 
-        #  Convert value to C identifier
-        if  c_ident==true
-          value.gsub!( /[ .,-=:;<>!@\#?$\%^&*\(\){}\[\]\\\/`~\|']/, "_" )
-          line.gsub! "<\^\^#{tag}>", value.upcase
+        invalchars = /[ .,-=:;<>!@\#?$\%^&*\(\){}\[\]\\\/`~\|']/
 
         #  Upcase value
-        elsif upcase==true
-          line.gsub! "<\^#{tag}>", value.upcase
+        value.upcase!  if upcase
+        #  Convert value to C identifier
+        value.gsub! invalchars, "_"   if c_ident
 
-        #  Direct replace
-        else
-          line.gsub! "<#{tag}>", value
-        end
+        line.gsub! "<#{tag}>", value
       end
 
       #  Restore escaped < >
-      line.sub!( 3.chr, "<" )
-      line.sub!( 2.chr, ">" )
+      line.sub! 3.chr, "<"
+      line.sub! 2.chr, ">"
 
       puts  line
     end
@@ -156,14 +150,14 @@ private
       end
 
       @defines.merge!({
-        'infile'     => @infile,                     #  /foo/bar/infile.ver
+        'infile'     => @infile,                     #  /foo/infile.ver
         'infilebase' => File.basename(@infile),      #  infile.ver
-        'infiledir'  => File.dirname(@infile),       #  /foo/bar/
+        'infiledir'  => File.dirname(@infile),       #  /foo
         'infileext'  => File.extname(@infile),       #  ver
 
-        'outfile'     => @outfile,                   #  /foo/bar/outfile.h
+        'outfile'     => @outfile,                   #  /foo/outfile.h
         'outfilebase' => File.basename(@outfile),    #  outfile.h
-        'outfiledir'  => File.dirname(@outfile),     #  /foo/bar/
+        'outfiledir'  => File.dirname(@outfile),     #  /foo\
         'outfileext'  => File.extname(@outfile) })   #  h
 
     rescue Exception => e
