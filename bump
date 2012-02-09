@@ -1,0 +1,287 @@
+#!/usr/bin/env ruby
+# --------------  (c)john hopson - see 'license' --------------
+#
+#  bump - a tool for adding version and system information to
+#  source files of any language.
+#
+#  - See readme.md for usage and examples.
+#  - hosted at github.com/johnhopson/bump
+#  - license at creativecommons.org/licenses/by-sa/3.0
+
+require  'time'
+require  'optparse'
+
+
+class App
+
+  BUMPVER = '0.9'
+
+  def  initialize
+    @appname = File.basename($0)
+    @time    = Time.now
+    @verbose = false
+    @help    = false
+    @version = false
+    @infile  = "version"
+    @outfile = "stdout"
+    @defines = {'appname'  => @appname,                         #  bump
+                'bumpver'  => BUMPVER,                          #  0.9
+                'os'       => RUBY_PLATFORM,                    #  linux
+                'msbuild'  => days_since_msepoch.to_s,          #  32378
+                'msrev'    => (seconds_since_midnight/2).to_s } #  21432
+  end
+
+
+  def  run
+    parseopts
+
+    #  Process input file
+    File.readlines( @infile ).each  do  |line|
+
+      #  Remove lines starting with ##
+      next if line =~ /^##/
+
+      #  Remove ## comments
+      line.sub!( /##.*$/, "" )
+
+      #  Replace escaped < > with
+      #  otherwise invalid value
+      line.sub!( /\\</, 3.chr )
+      line.sub!( /\\>/, 2.chr )
+
+      #  Find all '<>' tags
+      tags=[]
+      line.scan( /<(.+?)>/ ) { |tag| tags << tag.to_s }
+
+      #  substitute tags with values.
+      tags.each do |tag|
+
+        #  Find and remove ^
+        #  and ^^ prefixes
+        c_ident = upcase = false
+        case tag
+        when /^\^\^(.+)/ then  tag=$1; c_ident=true
+        when /^\^(.+)/   then  tag=$1; upcase=true
+        end
+
+        case tag
+        #  Value is environment var
+        when /^env\[(\w+)\]/ then  value=ENV[$1]
+        #  Value is time format
+        when /^(%.+)/        then  value=@time.strftime($1)
+        #  Value is exe output
+        when /^`(\w+)`/      then  value=`#{$1}`.chomp
+        #  Has default value
+        when /(\w+)\?=(.+)/  then  value=@defines[$1] || $2; @defines[$1]=value
+        #  Value in define table
+        when /(\w+)/         then  value=@defines[$1]
+        end
+
+        raise "No value for tag \"<#{tag}>\" "+
+              "on line \"#{line}\""   if value == nil
+
+        #  Convert value to C identifier
+        if  c_ident==true
+          value.gsub!( /[ .,-=:;<>!@\#?$\%^&*\(\){}\[\]\\\/`~\|']/, "_" )
+          line.gsub! "<\^\^#{tag}>", value.upcase
+
+        #  Upcase value
+        elsif upcase==true
+          line.gsub! "<\^#{tag}>", value.upcase
+
+        #  Direct replace
+        else
+          line.gsub! "<#{tag}>", value
+        end
+      end
+
+      #  Restore escaped < >
+      line.sub!( 3.chr, "<" )
+      line.sub!( 2.chr, ">" )
+
+      puts  line
+    end
+  end
+
+
+private
+
+  def parseopts
+
+    opts = OptionParser.new
+    opts.on( '-v', '--verbose',       'Run verbosely'        ) { @verbose = true }
+    opts.on( '-h', '--help',          'Emit help information') { @help    = true }
+    opts.on(       '--version',       'Emit version and exit') { @version = true }
+    opts.on( '-t', '--time TIME',     'Set specific time'    ) { |t| @time = Time.at(t.to_i) }
+    opts.on( '-o', '--output FILE',   'Output file name'     ) { |f| @outfile = f.strip
+                                                                     $stdout.reopen(f.strip, "w")}
+    opts.on( '-D', '--define DEFINE', 'Define variable'      ) { |f| f.scan(/^(\w+)=(.*)/) {
+                                                                     |k,v|  @defines[k]=v }}
+
+    opts.banner =<<-end.gsub(/^ {6}/, '')
+      Version and build information tool.
+
+      Usage: #{@appname} [options] [file]
+
+      Options:
+      end
+
+
+    opts.separator <<-end.gsub(/^ {6}/, '')
+
+      File is the input file.  The default name is 'version', if not specified.
+
+      Examples:
+          #{@appname} -v
+          #{@appname} -o output.h  -t `date +%s`  foo.ver
+          #{@appname} --output header.hpp  version
+          #{@appname} -Dbuildcfg=release -Ddate=02-12-12  foo  >foo.h
+
+      See readme.md for input file syntax.
+
+      end
+
+    begin
+      infiles = opts.parse!
+
+      if infiles.length == 1
+        @infile = infiles[0]
+      elsif infiles.length > 1
+        raise "#{infiles.length} files specified. Specify " +
+              "1 input file or use default (version)"
+      end
+
+      unless  File.exists?( @infile )
+        File.open(@infile, "w") { |f| f.puts @@template }
+      end
+
+      @defines.merge!({
+        'infile'     => @infile,                     #  /foo/bar/infile.ver
+        'infilebase' => File.basename(@infile),      #  infile.ver
+        'infiledir'  => File.dirname(@infile),       #  /foo/bar/
+        'infileext'  => File.extname(@infile),       #  ver
+
+        'outfile'     => @outfile,                   #  /foo/bar/outfile.h
+        'outfilebase' => File.basename(@outfile),    #  outfile.h
+        'outfiledir'  => File.dirname(@outfile),     #  /foo/bar/
+        'outfileext'  => File.extname(@outfile) })   #  h
+
+    rescue Exception => e
+      warn "#{e}\n#{opts}"
+      exit
+    end
+
+    if @version
+      puts @defines['bumpver']
+      exit
+
+    elsif @help
+      puts opts
+      exit
+    end
+
+    if @verbose
+      warn <<-end.gsub(/^ {8}/, '')
+        verbose = #{@verbose}
+        help    = #{@help}
+        version = #{@version}
+        defines -
+        end
+
+      @defines.map{ |k,v| warn "   %-11s = #{v}" % k }
+      warn ''
+    end
+  end
+
+
+  def  seconds_since_midnight
+    (@time.hour*60 + @time.min)*60 + @time.sec
+  end
+
+
+  def  days_since_msepoch
+    delta = @time-Time.utc(2000,1,1)
+    delta.to_i/(60*60*24)
+  end
+
+
+  @@template =<<-default.gsub(/^ {4}/, '')
+    ##  bump file template
+    // ----------------------------------------------------------
+    //
+    //  version & product information.
+    //
+    // - Created with <appname> <bumpver>
+    //
+
+    #ifndef  <^^outfilebase>_INCLUDED
+    #define  <^^outfilebase>_INCLUDED
+
+    // -------------------------------------------------------
+    //   V e r s i o n   I n f o r m a t i o n
+
+    //  Major new + maybe not compatible
+    #define  MAJOR  1
+
+    //  Minor new + backward compatible
+    #define  MINOR  0
+
+    //  Bug fixes + backward compatible
+    #define  PATCH  2
+
+    //  Optional info  ("RC2")
+    #define  MODIFIER  "RC1"
+
+    //  Internal, Alpha, Beta or Production
+    #define  DIST  "Internal"
+
+    //  DEBUG, RELEASE or TEST
+    #define  BUILD_CFG  "<buildcfg?=debug>"
+    #define  <^buildcfg>_BUILD
+
+    //  Unique tag
+    #define  UUID  "<`uuidgen`>"
+
+
+    #define  VERSION    { MAJOR, MINOR, PATCH, MODIFIER }
+    #define  MSVERSION  { MAJOR, MINOR, <msbuild>, <msrev> }
+    #define  VERSTR     "\\""#MAJOR"."#MINOR"."#PATCH"  "MODIFIER"\\""
+
+
+    // -------------------------------------------------------
+    //    P r o d u c t   I n f o r m a t i o n
+
+    #define  COMPANY    "Large Corp, Inc."
+    #define  PRODUCT    "iAwesome"
+    #define  MODEL      "3"
+    #define  COPYRIGHT  "(c)<%Y> "COMPANY            ##  (c)2012 Large Corp, Inc.
+
+
+    // -------------------------------------------------------
+    //    T i m e s t a m p
+
+    #define  DOW      "<%a>"                         ##  Wed
+    #define  TIME     "<%I:%M %p>"                   ##  "06:38 PM"
+    #define  TIME24   "<%H:%M>"                      ##  18:45
+    #define  TIME_T   <%s>                           ##  0x4D384FCA
+
+    #define  DATE     "<%Y-%m-%d>"                   ##  "2012-02-12"
+    #define  DATE2    "<%m-%d-%y>"                   ##  "01-23-12"
+    #define  DATE3    "<%d %b %Y>"                   ##  "03 Jan 2012"
+
+
+    // -------------------------------------------------------
+    //    S y s I n f o
+
+    #define  USER      <`whoami`>                    ##  john
+    #define  HOSTNAME  <`hostname`>                  ##  elvis.local
+    #define  OS        "<os>"                        ##  "Microsoft Windows NT 7.3.2400 Service Pack 8"
+    #define  DIR       "<env[PWD]>"                  ##  /users/john/workspace/bump
+
+    #endif
+    default
+end
+
+
+app = App.new
+app.run
