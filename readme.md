@@ -5,6 +5,26 @@ Bump replaces tags in an input file with system information, such as
 environment variables, program output and time.  It is typically used to
 capture build context in a source file before a build.
 
+For example, given input file foo.ver, on left below, run
+`bump -o foo.h  foo.ver` to get output on right.
+
+    // - Created with <appname> <bumpver>               // - Created with bump 0.9
+
+    #ifndef  <^^outfilebase>_INCLUDED                   #ifndef  FOO_H_INCLUDED
+    #define  <^^outfilebase>_INCLUDED                   #define  FOO_H_INCLUDED
+
+    #define  BUILD_CFG  "<buildcfg?=debug>"             #define  BUILD_CFG  "debug"
+    #define  <^buildcfg>_BUILD                          #define  DEBUG_BUILD
+
+    #define  DATE     "<%Y-%m-%d>"            ==>       #define  DATE     "2012-02-08"
+    #define  TIME     "<%I:%M %p>"                      #define  TIME     "04:53 PM"
+    #define  TIME_T   <%s>                              #define  TIME_T   1328741616
+    #define  UUID     "<`uuidgen`>"                     #define  UUID     "C0F50E50-5410-...
+
+    #define  USER     "<`whoami`>"                      #define  USER     "john"
+    #define  DIR      "<env[PWD]>"                      #define  DIR      "/Users/john/bump"
+    #endif                                              #endif
+
 
 ### Usage
 
@@ -105,27 +125,6 @@ Bump provides three optional tag modifiers -
 
     ?=  Place between tag and default value for tag.
         Example:  `<buildcfg?=debug>` sets buildcfg to 'debug', if it is not already defined.
-
-### Example
-
-Given input file foo.ver, on left below, run `bump -o foo.h  foo.ver` to get output on right.
-
-    // - Created with <appname> <bumpver>               // - Created with bump 0.9
-
-    #ifndef  <^^outfilebase>_INCLUDED                   #ifndef  FOO_H_INCLUDED
-    #define  <^^outfilebase>_INCLUDED                   #define  FOO_H_INCLUDED
-
-    #define  BUILD_CFG  "<buildcfg?=debug>"             #define  BUILD_CFG  "debug"
-    #define  <^buildcfg>_BUILD                          #define  DEBUG_BUILD
-
-    #define  DATE     "<%Y-%m-%d>"            ==>       #define  DATE     "2012-02-08"
-    #define  TIME     "<%I:%M %p>"                      #define  TIME     "04:53 PM"
-    #define  TIME_T   <%s>                              #define  TIME_T   1328741616
-    #define  UUID     "<`uuidgen`>"                     #define  UUID     "C0F50E50-5410-...
-
-    #define  USER     "<`whoami`>"                      #define  USER     "john"
-    #define  DIR      "<env[PWD]>"                      #define  DIR      "/Users/john/bump"
-    #endif                                              #endif
 
 
 ## Test
