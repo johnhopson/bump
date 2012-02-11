@@ -108,6 +108,8 @@ Bump provides three optional tag modifiers -
 
 ### Example
 
+Given input file foo.ver, on left below, run `bump -o foo.h  foo.ver` to get output on right.
+
     // - Created with <appname> <bumpver>               // - Created with bump 0.9
 
     #ifndef  <^^outfilebase>_INCLUDED                   #ifndef  FOO_H_INCLUDED
