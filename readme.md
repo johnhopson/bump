@@ -52,8 +52,9 @@ produce bar.h on right.
 
 Bump replaces tags with values.  Tags are surrounded by `< >` characters
 (e.g. `<tag>`).  Bump knows no language syntax, so all tags are replaced
-regardless of their location in the file.  Literal `< >` characters may
-be passed through Bump by adding a preceding backslash (i.e. `\<` or `\>`).
+regardless of their location in the input file.  Literal `< >` characters
+may be passed through Bump by adding a preceding backslash
+(i.e. `\<` or `\>`).
 
 Bump filters out comments that start with `~~` (double-tilde), up to the end
 of the line,  e.g. `~~ my comment`.  Comments that begin in column 1 remove
