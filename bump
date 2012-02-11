@@ -1,12 +1,13 @@
 #!/usr/bin/env ruby
-# --------------  (c)john hopson - see 'license' --------------
+# --------------------  (c)john hopson  --------------------
 #
-#  bump - a tool for adding version and system information to
-#  source files of any language.
+#  bump - replaces tags in an input file with system
+#         information, such as environment variables,
+#         program output and time.
 #
 #  - See readme.md for usage and examples.
 #  - hosted at github.com/johnhopson/bump
-#  - license at creativecommons.org/licenses/by-sa/3.0
+#  - licensed per creativecommons.org/licenses/by-sa/3.0
 
 require  'time'
 require  'optparse'
