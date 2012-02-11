@@ -26,9 +26,7 @@ class App
     @outfile = "stdout"
     @defines = {'appname' => @appname,                         #  bump
                 'bumpver' => BUMPVER,                          #  0.9
-                'os'      => RUBY_PLATFORM,                    #  linux
-                'msbuild' => days_since_msepoch.to_s,          #  32378
-                'msrev'   => (seconds_since_midnight/2).to_s } #  21432
+                'os'      => RUBY_PLATFORM }                   #  linux
   end
 
 
@@ -38,11 +36,11 @@ class App
     #  Process input file
     File.readlines( @infile ).each  do  |line|
 
-      #  Remove lines starting with ##
-      next if line =~ /^##/
+      #  Remove lines starting with ~~
+      next if line =~ /^~~/
 
-      #  Remove ## comments
-      line.sub! /##.*$/, ""
+      #  Remove ~~ comments
+      line.sub! /~~.*$/, ""
 
       #  Replace escaped < > with
       #  otherwise invalid value
@@ -68,6 +66,8 @@ class App
         when /^env\[(\w+)\]/ then  value=ENV[$1]
         #  Value is a time format
         when /^(%.+)/        then  value=@time.strftime $1
+        when /^%msbuild/     then  value=days_since_msepoch.to_s
+        when /^%msrev/       then  value=(seconds_since_midnight/2).to_s
         #  Value is exe output
         when /^`(\w+)`/      then  value=`#{$1}`.chomp
         #  Has default value
@@ -123,7 +123,8 @@ private
 
     opts.separator <<-end.gsub(/^ {6}/, '')
 
-      File is the input file.  The default name is 'version', if not specified.
+      Input file name is './version', if no file specified.
+      Input file is created with default content, if it does not exist.
 
       Examples:
           #{@appname} -v
@@ -200,7 +201,7 @@ private
 
 
   @@template =<<-default.gsub(/^ {4}/, '')
-    ##  bump file template
+    ~~  bump file template
     // ----------------------------------------------------------
     //
     //  version & product information.
@@ -238,7 +239,7 @@ private
 
 
     #define  VERSION    { MAJOR, MINOR, PATCH, MODIFIER }
-    #define  MSVERSION  { MAJOR, MINOR, <msbuild>, <msrev> }
+    #define  MSVERSION  { MAJOR, MINOR, <%msbuild>, <%msrev> }
     #define  VERSTR     "\\""#MAJOR"."#MINOR"."#PATCH"  "MODIFIER"\\""
 
 
@@ -248,29 +249,29 @@ private
     #define  COMPANY    "Large Corp, Inc."
     #define  PRODUCT    "iAwesome"
     #define  MODEL      "3"
-    #define  COPYRIGHT  "(c)<%Y> "COMPANY            ##  (c)2012 Large Corp, Inc.
+    #define  COPYRIGHT  "(c)<%Y> "COMPANY            ~~  (c)2012 Large Corp, Inc.
 
 
     // -------------------------------------------------------
     //    T i m e s t a m p
 
-    #define  DOW      "<%a>"                         ##  Wed
-    #define  TIME     "<%I:%M %p>"                   ##  "06:38 PM"
-    #define  TIME24   "<%H:%M>"                      ##  18:45
-    #define  TIME_T   <%s>                           ##  0x4D384FCA
+    #define  DOW      "<%a>"                         ~~  Wed
+    #define  TIME     "<%I:%M %p>"                   ~~  "06:38 PM"
+    #define  TIME24   "<%H:%M>"                      ~~  18:45
+    #define  TIME_T   <%s>                           ~~  0x4D384FCA
 
-    #define  DATE     "<%Y-%m-%d>"                   ##  "2012-02-12"
-    #define  DATE2    "<%m-%d-%y>"                   ##  "01-23-12"
-    #define  DATE3    "<%d %b %Y>"                   ##  "03 Jan 2012"
+    #define  DATE     "<%Y-%m-%d>"                   ~~  "2012-02-12"
+    #define  DATE2    "<%m-%d-%y>"                   ~~  "01-23-12"
+    #define  DATE3    "<%d %b %Y>"                   ~~  "03 Jan 2012"
 
 
     // -------------------------------------------------------
     //    S y s I n f o
 
-    #define  USER      <`whoami`>                    ##  john
-    #define  HOSTNAME  <`hostname`>                  ##  elvis.local
-    #define  OS        "<os>"                        ##  "Microsoft Windows NT 7.3.2400 Service Pack 8"
-    #define  DIR       "<env[PWD]>"                  ##  /users/john/workspace/bump
+    #define  USER      <`whoami`>                    ~~  john
+    #define  HOSTNAME  <`hostname`>                  ~~  elvis.local
+    #define  OS        "<os>"                        ~~  "Microsoft Windows NT 7.3.2400 Service Pack 8"
+    #define  DIR       "<env[PWD]>"                  ~~  /users/john/workspace/bump
 
     #endif
     default
