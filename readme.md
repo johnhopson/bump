@@ -36,7 +36,7 @@ regardless of their location in the file.  Literal `< >` characters will
 pass through Bump if they have a preceding backslash (i.e. `\<` or `\>`).
 
 Bump also allows comments.  Comments start with `~~` (double-tilde) and stop
-at the end of the line, e.g. `~~` my comment.  Comments that begin in column
+at the end of the line, e.g. `~~ my comment`.  Comments that begin in column
 1 remove the entire line, including the newline.  Otherwise, only the comment
 portion is removed.
 
@@ -50,12 +50,11 @@ Bump makes five types of replacements -
                     Example:  <env[HOME]> => /Users/john
 
 
-    Time Format     Bump stores the time the application is started.
-                    The time can also be specified on the command line using
-                    the '-t' option.
+    Time Format     Bump stores the time the application is started.  That time
+                    can be overridden with the command line option '-t'.
 
-                    To insert a time tag specify a format string for the Ruby
-                    String's strftime() method.  Time tags must begin with '%'.
+                    To insert a time tag, specify a format string for the Ruby
+                    Time class's strftime() method.  Time tags must begin with '%'.
                     Example:  <%Y-%m-%d> => 2012-02-08
 
                     Bump adds two additional time formats -
@@ -93,18 +92,18 @@ Bump makes five types of replacements -
 
 
     Command         Bump allows tag definition on the command line, using the
-    Line            -D option.
+    Line            -D option.  Example: bump -Dname="Elvis Presley"
 
 
 Bump provides three optional tag modifiers -
 
-    ^   Replacement is upper case.
+    ^   Place before tag to make replacement upper case.
         Example:  if foo = Foo*Bar, <^foo> => FOO*BAR
 
-    ^^  Replacement is upper case C identifier.
+    ^^  Place before tag to make replacement upper case C identifier.
         Example:  if foo = Foo-Bar.h, <^^foo> => FOO_BAR_H
 
-    ?=  Supplies a default value.
+    ?=  Place between tag and default value for tag.
         Example:  `<buildcfg?=debug>` sets buildcfg to 'debug', if it is not already defined.
 
 ### Example
