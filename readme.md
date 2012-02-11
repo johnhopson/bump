@@ -3,15 +3,15 @@
 
 Bump replaces tags in an input file with system information, such as
 environment variables, program output and time.  It is typically used to
-capture build context in a source file before a build.
+capture context information in a source file before a build.
 
-For example, given input file foo.ver, on left below, run
-`bump -o foo.h  foo.ver` to get output on right.
+For example, given file foo, below on left, run `bump -o bar.h  foo` to
+produce bar.h on right.
 
     // - Created with <appname> <bumpver>               // - Created with bump 0.9
 
-    #ifndef  <^^outfilebase>_INCLUDED                   #ifndef  FOO_H_INCLUDED
-    #define  <^^outfilebase>_INCLUDED                   #define  FOO_H_INCLUDED
+    #ifndef  <^^outfilebase>_INCLUDED                   #ifndef  BAR_H_INCLUDED
+    #define  <^^outfilebase>_INCLUDED                   #define  BAR_H_INCLUDED
 
     #define  BUILD_CFG  "<buildcfg?=debug>"             #define  BUILD_CFG  "debug"
     #define  <^buildcfg>_BUILD                          #define  DEBUG_BUILD
