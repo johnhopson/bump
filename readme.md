@@ -47,7 +47,7 @@ Bump makes five types of replacements -
 
     Environment     Tags with the '`<env[var]>`' format are replaced with the
     Variables       environment variable 'var'.
-                    Example  <env[HOME]> => /Users/john
+                    Example:  <env[HOME]> => /Users/john
 
 
     Time Format     Bump stores the time the application is started.
@@ -56,7 +56,7 @@ Bump makes five types of replacements -
 
                     To insert a time tag specify a format string for the Ruby
                     String's strftime() method.  Time tags must begin with '%'.
-                    Example  <%Y-%m-%d> => 2012-02-08
+                    Example:  <%Y-%m-%d> => 2012-02-08
 
                     Bump adds two additional time formats -
 
@@ -70,7 +70,7 @@ Bump makes five types of replacements -
     Executable      Tags surrounded by backticks are commands to be executed.
     Output          The tag is replaced with the command output.  Any trailing
                     newline is removed from the output.
-                    Example  <`whoami`> => john
+                    Example:  <`whoami`> => john
 
 
     Program         Bump provides tags with program metadata.
@@ -99,13 +99,13 @@ Bump makes five types of replacements -
 Bump provides three optional tag modifiers -
 
     ^   Replacement is upper case.
-        Example - if foo = Foo*Bar, <^foo> => FOO*BAR
+        Example:  if foo = Foo*Bar, <^foo> => FOO*BAR
 
     ^^  Replacement is upper case C identifier.
-        Example - if foo = Foo-Bar.h, <^^foo> => FOO_BAR_H
+        Example:  if foo = Foo-Bar.h, <^^foo> => FOO_BAR_H
 
     ?=  Supplies a default value.
-        Example - `<buildcfg?=debug>` sets buildcfg to 'debug' if it is not already defined.
+        Example:  `<buildcfg?=debug>` sets buildcfg to 'debug' if it is not already defined.
 
 ### Example
 
