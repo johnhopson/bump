@@ -30,13 +30,13 @@ capture build context in a source file before a build.
 
 ### Syntax
 
-Bump replaces tags with values.  Tags are surrounded by `<>` characters
+Bump replaces tags with values.  Tags are surrounded by `< >` characters
 (e.g. `<tag>`).  Bump knows no language syntax, so all tags are replaced
-regardless of their location in the file.  Literal `<>` characters will
+regardless of their location in the file.  Literal `< >` characters will
 pass through Bump if they have a preceding backslash (i.e. `\<` or `\>`).
 
-Bump also allows comments.  Comments start with '~~' (double-tilde) and stop
-at the end of the line, e.g. '~~ my comment'.  Comments that begin in column
+Bump also allows comments.  Comments start with `~~` (double-tilde) and stop
+at the end of the line, e.g. `~~` my comment.  Comments that begin in column
 1 remove the entire line, including the newline.  Otherwise, only the comment
 portion is removed.
 
@@ -105,7 +105,7 @@ Bump provides three optional tag modifiers -
         Example:  if foo = Foo-Bar.h, <^^foo> => FOO_BAR_H
 
     ?=  Supplies a default value.
-        Example:  `<buildcfg?=debug>` sets buildcfg to 'debug' if it is not already defined.
+        Example:  `<buildcfg?=debug>` sets buildcfg to 'debug', if it is not already defined.
 
 ### Example
 

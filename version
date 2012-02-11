@@ -1,0 +1,73 @@
+~~  bump file template
+// ----------------------------------------------------------
+//
+//  version & product information.
+//
+// - Created with <appname> <bumpver>
+//
+
+#ifndef  <^^outfilebase>_INCLUDED
+#define  <^^outfilebase>_INCLUDED
+
+// -------------------------------------------------------
+//   V e r s i o n   I n f o r m a t i o n
+
+//  Major new + maybe not compatible
+#define  MAJOR  1
+
+//  Minor new + backward compatible
+#define  MINOR  0
+
+//  Bug fixes + backward compatible
+#define  PATCH  2
+
+//  Optional info  ("RC2")
+#define  MODIFIER  "RC1"
+
+//  Internal, Alpha, Beta or Production
+#define  DIST  "Internal"
+
+//  DEBUG, RELEASE or TEST
+#define  BUILD_CFG  "<buildcfg?=debug>"
+#define  <^buildcfg>_BUILD
+
+//  Unique tag
+#define  UUID  "<`uuidgen`>"
+
+
+#define  VERSION    { MAJOR, MINOR, PATCH, MODIFIER }
+#define  MSVERSION  { MAJOR, MINOR, <%msbuild>, <%msrev> }
+#define  VERSTR     "\""#MAJOR"."#MINOR"."#PATCH"  "MODIFIER"\""
+
+
+// -------------------------------------------------------
+//    P r o d u c t   I n f o r m a t i o n
+
+#define  COMPANY    "Large Corp, Inc."
+#define  PRODUCT    "iAwesome"
+#define  MODEL      "3"
+#define  COPYRIGHT  "(c)<%Y> "COMPANY            ~~  (c)2012 Large Corp, Inc.
+
+
+// -------------------------------------------------------
+//    T i m e s t a m p
+
+#define  DOW      "<%a>"                         ~~  Wed
+#define  TIME     "<%I:%M %p>"                   ~~  "06:38 PM"
+#define  TIME24   "<%H:%M>"                      ~~  18:45
+#define  TIME_T   <%s>                           ~~  0x4D384FCA
+
+#define  DATE     "<%Y-%m-%d>"                   ~~  "2012-02-12"
+#define  DATE2    "<%m-%d-%y>"                   ~~  "01-23-12"
+#define  DATE3    "<%d %b %Y>"                   ~~  "03 Jan 2012"
+
+
+// -------------------------------------------------------
+//    S y s I n f o
+
+#define  USER      <`whoami`>                    ~~  john
+#define  HOSTNAME  <`hostname`>                  ~~  elvis.local
+#define  OS        "<os>"                        ~~  "Microsoft Windows NT 7.3.2400 Service Pack 8"
+#define  DIR       "<env[PWD]>"                  ~~  /users/john/workspace/bump
+
+#endif
