@@ -52,13 +52,13 @@ For example, given input file foo.ver, on left below, run
 
 Bump replaces tags with values.  Tags are surrounded by `< >` characters
 (e.g. `<tag>`).  Bump knows no language syntax, so all tags are replaced
-regardless of their location in the file.  Literal `< >` characters will
-pass through Bump if they have a preceding backslash (i.e. `\<` or `\>`).
+regardless of their location in the file.  Literal `< >` characters may
+be passed through Bump by adding a preceding backslash (i.e. `\<` or `\>`).
 
-Bump also allows comments.  Comments start with `~~` (double-tilde) and stop
-at the end of the line, e.g. `~~ my comment`.  Comments that begin in column
-1 remove the entire line, including the newline.  Otherwise, only the comment
-portion is removed.
+Bump filters out comments that start with `~~` (double-tilde), up to the end
+of the line,  e.g. `~~ my comment`.  Comments that begin in column 1 remove
+the entire line, including the newline.  Otherwise, only the comment portion
+is removed.
 
 Bump makes five types of replacements -
 
@@ -73,11 +73,11 @@ Bump makes five types of replacements -
     Time Format     Bump stores the time the application is started.  That time
                     can be overridden with the command line option '-t'.
 
-                    To insert a time tag, specify a format string for the Ruby
-                    Time class's strftime() method.  Time tags must begin with '%'.
+                    Time tags specify a format string for the Ruby Time class's
+                    strftime() method.  Time tags must begin with '%'.
                     Example:  <%Y-%m-%d> => 2012-02-08
 
-                    Bump adds two additional time formats -
+                    Bump adds two additional time tags -
 
                       %msbuild  Microsoft's Build value, the number of days
                                 since 1 Jan 2000.
@@ -111,8 +111,8 @@ Bump makes five types of replacements -
                       outfileext    Output file extension   h
 
 
-    Command         Bump allows tag definition on the command line, using the
-    Line            -D option.  Example: bump -Dname="Elvis Presley"
+    Command         Bump allows tags to be defined on the command line, using
+    Line            the -D option.  Example: bump -Dname="Elvis Presley"
 
 
 Bump provides three optional tag modifiers -
