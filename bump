@@ -108,8 +108,8 @@ private
     opts.on( '-h', '--help',          'Emit help information') { @help    = true }
     opts.on(       '--version',       'Emit version and exit') { @version = true }
     opts.on( '-t', '--time TIME',     'Set specific time'    ) { |t| @time = Time.at(t.to_i) }
-    opts.on( '-o', '--output FILE',   'Output file name'     ) { |f| @outfile = f.strip
-                                                                     $stdout.reopen(f.strip, "w")}
+    opts.on( '-o', '--output FILE',   'Output file name'     ) { |f| @outfile = f
+                                                                     $stdout.reopen(f, "w")}
     opts.on( '-D', '--define DEFINE', 'Define variable'      ) { |f| f.scan(/^(\w+)=(.*)/) {
                                                                      |k,v|  @defines[k]=v }}
 
@@ -147,21 +147,6 @@ private
               "1 input file or use default (version)"
       end
 
-      unless  File.exists?( @infile )
-        File.open(@infile, "w") { |f| f.puts @@template }
-      end
-
-      @defines.merge!({
-        'infile'     => @infile,                     #  /foo/infile.ver
-        'infilebase' => File.basename(@infile),      #  infile.ver
-        'infiledir'  => File.dirname(@infile),       #  /foo
-        'infileext'  => File.extname(@infile),       #  ver
-
-        'outfile'     => @outfile,                   #  /foo/outfile.h
-        'outfilebase' => File.basename(@outfile),    #  outfile.h
-        'outfiledir'  => File.dirname(@outfile),     #  /foo\
-        'outfileext'  => File.extname(@outfile) })   #  h
-
     rescue Exception => e
       warn "#{e}\n#{opts}"
       exit
@@ -187,6 +172,22 @@ private
       @defines.map{ |k,v| warn "   %-11s = #{v}" % k }
       warn ''
     end
+
+
+    unless  File.exists?( @infile )
+      File.open(@infile, "w") { |f| f.puts @@template }
+    end
+
+    @defines.merge!({
+      'infile'     => @infile,                     #  /foo/infile.ver
+      'infilebase' => File.basename(@infile),      #  infile.ver
+      'infiledir'  => File.dirname(@infile),       #  /foo
+      'infileext'  => File.extname(@infile),       #  ver
+
+      'outfile'     => @outfile,                   #  /foo/outfile.h
+      'outfilebase' => File.basename(@outfile),    #  outfile.h
+      'outfiledir'  => File.dirname(@outfile),     #  /foo\
+      'outfileext'  => File.extname(@outfile) })   #  h
   end
 
 

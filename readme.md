@@ -2,8 +2,10 @@
 - - - - - - - -
 
 Bump replaces tags in an input file with system information, such as
-environment variables, program output and time.  It is typically used to
-capture context information in a source file before a build.
+environment variables, program output and time.  All input content is
+passed through verbatim, except for the tag replacements.  Bump is
+typically used to capture context information in a source file before
+a build.
 
 For example, given file foo, below on left, run `bump -o bar.h  foo` to
 produce bar.h on right.
@@ -128,11 +130,11 @@ Bump provides three optional tag modifiers -
         Example:  `<buildcfg?=debug>` sets buildcfg to 'debug', if it is not already defined.
 
 
-## Test
+### Test
 'test/bump\_test.rb' is a test suite for Bump.  Use the '-h' option to see
 usage, including how to run individual tests.
 
-## Other
+### Other
 Written and tested with Ruby 1.8.7 on OS X 10.7.
 
 [![CC](http://i.creativecommons.org/l/by-sa/3.0/88x31.png)](http://creativecommons.org/licenses/by-sa/3.0/)   &nbsp;Licensed under [Creative Commons](http://creativecommons.org/licenses/by-sa/3.0/)
