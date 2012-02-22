@@ -1,18 +1,11 @@
 #!/usr/bin/env ruby
-# ------------------  (c)2011 john hopson  -------------------
+# --------------------  (c)john hopson  --------------------
 #
 #  Test suite for bump application.
 #
 #  - Get usage with 'bump_test.rb -h'
-#
-#  - Requires GCC, but only basic features.
-#
-#  - Written and tested with ruby 1.8.7 on OS X.
-#
-#  - Hosted at github.com/johnhopson/bump
-#
-#  - 'license' file has release terms
-#
+#  - hosted at github.com/johnhopson/bump
+#  - licensed per creativecommons.org/licenses/by-sa/3.0
 
 $: << File.join(File.dirname(__FILE__), '..')
 
@@ -55,5 +48,8 @@ class TestBump < Test::Unit::TestCase
 
     assert_equal  expectedhelp, `./bump  --help`
   end
+
+
+  #  TODO - add more tests!
 
 end
