@@ -127,7 +127,7 @@ Bump provides three optional tag modifiers -
         Example:  if foo = Foo-Bar.h, <^^foo> => FOO_BAR_H
 
     ?=  Place between tag and default value for tag.
-        Example:  `<buildcfg?=debug>` sets buildcfg to 'debug', if it is not already defined.
+        Example:  `<buildcfg?=debug>` sets buildcfg to 'debug', if buildcfg is not already defined.
 
 
 ### Test
