@@ -1,5 +1,5 @@
-#bump
-- - - - - - - -
+bump
+----
 
 Bump replaces tags in an input file with system information, such as
 environment variables, program output and time.  All input content is
